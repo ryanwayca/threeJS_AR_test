@@ -10,7 +10,7 @@
 
 		<div id="info">
 			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> ar - hit test<br/>(Chrome Android 81+)
-			<p>Hello</p>
+			<p>Hello there</p>
 		</div>
 
 		<script type="module">
@@ -63,7 +63,7 @@
 				document.body.appendChild( ARButton.createButton( renderer, { requiredFeatures: [ 'hit-test' ] } ) );
 
 				// Draw Geometry
-				const geometry = new THREE.SphereBufferGeometry( 0.1, 0.1, 0.2, 32 ).translate( 0, 0.1, 0 );
+				const geometry = new THREE.CylinderBufferGeometry( 0.1, 0.1, 0.2, 32 ).translate( 0, 0.1, 0 );
 				//const loader = new GLTFLoader();
 
 				function onSelect() {
