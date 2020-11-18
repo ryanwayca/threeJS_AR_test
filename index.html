@@ -62,48 +62,30 @@
 				document.body.appendChild( ARButton.createButton( renderer, { requiredFeatures: [ 'hit-test' ] } ) );
 
 				// Draw Geometry
-				//const geometry = new THREE.CylinderBufferGeometry( 0.1, 0.1, 0.2, 32 ).translate( 0, 0.1, 0 );
-				const loader = new GLTFLoader();
+				const geometry = new THREE.CylinderBufferGeometry( 0.1, 0.1, 0.2, 32 ).translate( 0, 0.1, 0 );
+				//const loader = new GLTFLoader();
 
 				function onSelect() {
 
 					if ( reticle.visible ) {
-						/*
+						
 						const material = new THREE.MeshPhongMaterial( { color: 0xffffff * Math.random() } );
 						const mesh = new THREE.Mesh( geometry, material );
 						mesh.position.setFromMatrixPosition( reticle.matrix );
 						mesh.scale.y = Math.random() * 2 + 1;
 						scene.add( mesh );
-						*/
+						
+						/*
 						loader.load( './assets/SC_Kiosk.glb', function ( gltf ) {
 							scene.add( gltf.scene );
 						}, undefined, function ( error ) {
 							console.error( error );
 						} );
-
-						const material = new THREE.MeshPhongMaterial( { color: 0xffffff * Math.random() } );
-						const mesh = new THREE.Mesh( loader, material );
-						mesh.position.setFromMatrixPosition( reticle.matrix );
-						mesh.scale.y = Math.random() * 2 + 1;
-						scene.add( mesh );
-
+						*/
 					}
 
 				}
 				
-				/*
-				const loader = new GLTFLoader();
-
-				loader.load( './assets/SC_Kiosk.glb', function ( gltf ) {
-
-					scene.add( gltf.scene );
-
-				}, undefined, function ( error ) {
-
-					console.error( error );
-
-				} );
-				*/
 
 
 				controller = renderer.xr.getController( 0 );
