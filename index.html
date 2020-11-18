@@ -14,8 +14,13 @@
 
 		<script type="module">
 
+			// Our Javascript will go here.
+
 			import * as THREE from './build/three.module.js';
 			import { ARButton } from './jsm/webxr/ARButton.js';
+
+			// import GLTF - 3D model loader
+			import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
 
 			let container;
 			let camera, scene, renderer;
@@ -33,6 +38,8 @@
 
 				container = document.createElement( 'div' );
 				document.body.appendChild( container );
+				
+				// Create Scene
 
 				scene = new THREE.Scene();
 
@@ -54,16 +61,28 @@
 
 				document.body.appendChild( ARButton.createButton( renderer, { requiredFeatures: [ 'hit-test' ] } ) );
 
-				//
-
-				const geometry = new THREE.CylinderBufferGeometry( 0.1, 0.1, 0.2, 32 ).translate( 0, 0.1, 0 );
+				// Draw Geometry
+				//const geometry = new THREE.CylinderBufferGeometry( 0.1, 0.1, 0.2, 32 ).translate( 0, 0.1, 0 );
+				const loader = new GLTFLoader();
 
 				function onSelect() {
 
 					if ( reticle.visible ) {
-
+						/*
 						const material = new THREE.MeshPhongMaterial( { color: 0xffffff * Math.random() } );
 						const mesh = new THREE.Mesh( geometry, material );
+						mesh.position.setFromMatrixPosition( reticle.matrix );
+						mesh.scale.y = Math.random() * 2 + 1;
+						scene.add( mesh );
+						*/
+						loader.load( './assets/SC_Kiosk.glb', function ( gltf ) {
+							scene.add( gltf.scene );
+						}, undefined, function ( error ) {
+							console.error( error );
+						} );
+
+						const material = new THREE.MeshPhongMaterial( { color: 0xffffff * Math.random() } );
+						const mesh = new THREE.Mesh( loader, material );
 						mesh.position.setFromMatrixPosition( reticle.matrix );
 						mesh.scale.y = Math.random() * 2 + 1;
 						scene.add( mesh );
@@ -71,6 +90,21 @@
 					}
 
 				}
+				
+				/*
+				const loader = new GLTFLoader();
+
+				loader.load( './assets/SC_Kiosk.glb', function ( gltf ) {
+
+					scene.add( gltf.scene );
+
+				}, undefined, function ( error ) {
+
+					console.error( error );
+
+				} );
+				*/
+
 
 				controller = renderer.xr.getController( 0 );
 				controller.addEventListener( 'select', onSelect );
@@ -99,7 +133,7 @@
 
 			}
 
-			//
+			// Render Scene
 
 			function animate() {
 
