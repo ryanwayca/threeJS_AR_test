@@ -16,14 +16,14 @@
 		<script type="module">
 
 			// Our Javascript will go here.
-
-			/*
 			
 			import * as THREE from './build/three.module.js';
 			import { ARButton } from './jsm/webxr/ARButton.js';
 
 			// import GLTF - 3D model loader
 			//import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+			import { OBJLoader } from './jsm/loaders/OBJLoader.js';
+			import { MTLLoader } from './jsm/loaders/MTLLoader.js';
 
 			let container;
 			let camera, scene, renderer;
@@ -33,6 +33,10 @@
 
 			let hitTestSource = null;
 			let hitTestSourceRequested = false;
+
+			//
+			var mtlLoader;
+			var monkeymesh;
 
 			init();
 			animate();
@@ -65,9 +69,32 @@
 				document.body.appendChild( ARButton.createButton( renderer, { requiredFeatures: [ 'hit-test' ] } ) );
 
 				// Draw Geometry
-				const geometry = new THREE.CylinderBufferGeometry( 0.1, 0.1, 0.2, 32 ).translate( 0, 0.1, 0 );
+				//const geometry = new THREE.CylinderBufferGeometry( 0.1, 0.1, 0.2, 32 ).translate( 0, 0.1, 0 );
 				//const loader = new GLTFLoader();
 
+				////////////////////////////////////////////////////////////////////////////////////////////////
+				mtlLoader = new MTLLoader();
+				mtlLoader.setPath( "./assets/" );
+				mtlLoader.load( 'SC_Kiosk.mtl', function ( materials ) {
+
+					materials.preload();
+
+					var objLoader = new OBJLoader();
+					objLoader.setMaterials( materials );
+					objLoader.setPath( "./assets/" );
+					objLoader.load( 'SC_Kiosk.obj', function ( object ) {
+
+						monkeymesh = object;
+						scene.add( monkeymesh );
+
+					} );
+
+				} );
+
+				var boxgeometry = new THREE.BoxBufferGeometry( 0.25, 0.25, 0.25 ).translate( 0, 0.1, 0 );
+
+
+				// Place model if reticle visible on touch
 				function onSelect() {
 
 					if ( reticle.visible ) {
@@ -78,21 +105,23 @@
 						mesh.scale.y = Math.random() * 2 + 1;
 						scene.add( mesh );
 						
-						//
+						/*
 						loader.load( './assets/SC_Kiosk.glb', function ( gltf ) {
 							scene.add( gltf.scene );
 						}, undefined, function ( error ) {
 							console.error( error );
 						} );
-						//
+						*/
 					}
 
 				}
 				
-				*/
+				
 
-
-				import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118.3/build/three.module.js';
+				/*
+				//import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118.3/build/three.module.js';
+				import * as THREE from './build/three.module.js';
+				import { ARButton } from './jsm/webxr/ARButton.js';
 				import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
 
 				var container;
@@ -169,6 +198,7 @@
 						}
 
 					}
+					*/
 
 				
 ////////// beyond this point is the same as the tutorial /////
