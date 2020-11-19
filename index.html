@@ -17,6 +17,8 @@
 
 			// Our Javascript will go here.
 
+			/*
+			
 			import * as THREE from './build/three.module.js';
 			import { ARButton } from './jsm/webxr/ARButton.js';
 
@@ -76,18 +78,100 @@
 						mesh.scale.y = Math.random() * 2 + 1;
 						scene.add( mesh );
 						
-						/*
+						//
 						loader.load( './assets/SC_Kiosk.glb', function ( gltf ) {
 							scene.add( gltf.scene );
 						}, undefined, function ( error ) {
 							console.error( error );
 						} );
-						*/
+						//
 					}
 
 				}
 				
+				*/
 
+
+				import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118.3/build/three.module.js';
+				import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+
+				var container;
+				var camera, scene, renderer;
+				var controller;
+
+				var reticle;
+
+				var hitTestSource = null;
+				var hitTestSourceRequested = false;
+
+				var mtlLoader;
+				var monkeymesh;
+
+				init();
+				animate();
+
+				function init() {
+
+					container = document.createElement( 'div' );
+					document.body.appendChild( container );
+
+					scene = new THREE.Scene();
+
+					camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 20 );
+					camera.position.z = 10;
+
+					var light = new THREE.HemisphereLight( 0xffffff, 0xbbbbff, 1 );
+					light.position.set( 0.5, 1, 0.25 );
+					scene.add( light );
+
+					//
+
+					renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
+					renderer.setPixelRatio( window.devicePixelRatio );
+					renderer.setSize( window.innerWidth, window.innerHeight );
+					renderer.xr.enabled = true;
+					container.appendChild( renderer.domElement );
+
+
+					////////////////////////////////////////////////////////////////////////////////////////////////
+					mtlLoader = new MTLLoader();
+					mtlLoader.setPath( "./assets/" );
+					mtlLoader.load( 'SC_Kiosk.mtl', function ( materials ) {
+
+						materials.preload();
+
+						var objLoader = new OBJLoader();
+						objLoader.setMaterials( materials );
+						objLoader.setPath( "./assets/" );
+						objLoader.load( 'SC_Kiosk.obj', function ( object ) {
+
+							monkeymesh = object;
+							scene.add( monkeymesh );
+
+						} );
+
+					} );
+
+					var boxgeometry = new THREE.BoxBufferGeometry( 0.25, 0.25, 0.25 ).translate( 0, 0.1, 0 );
+
+					function onSelect() {
+
+						if ( reticle.visible ) {
+
+							var material = new THREE.MeshPhongMaterial( { color: 0xffffff * Math.random() } );
+							var mesh = new THREE.Mesh( boxgeometry, material );
+							mesh.position.setFromMatrixPosition( reticle.matrix );
+							//mesh.scale.y = Math.random() * 2 + 1;
+							mesh.scale.set( 0.25, 0.25, 0.25 );
+							scene.add( mesh );
+
+
+						}
+
+					}
+
+				
+////////// beyond this point is the same as the tutorial /////
 
 				controller = renderer.xr.getController( 0 );
 				controller.addEventListener( 'select', onSelect );
