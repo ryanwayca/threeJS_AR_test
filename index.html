@@ -10,7 +10,7 @@
 
 		<div id="info">
 			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> ar - hit test<br/>(Chrome Android 81+)
-			<p>Hello</p>
+			<p>Salutations</p>
 		</div>
 
 		<script type="module">
@@ -22,8 +22,8 @@
 
 			// import GLTF - 3D model loader
 			//import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
-			//import { OBJLoader } from './jsm/loaders/OBJLoader.js';
-			//import { MTLLoader } from './jsm/loaders/MTLLoader.js';
+			import { OBJLoader } from './jsm/loaders/OBJLoader.js';
+			import { MTLLoader } from './jsm/loaders/MTLLoader.js';
 
 			let container;
 			let camera, scene, renderer;
@@ -35,8 +35,8 @@
 			let hitTestSourceRequested = false;
 
 			//
-			//let mtlLoader;
-			//let monkeymesh;
+			let mtlLoader;
+			let monkeymesh;
 
 			init();
 			animate();
@@ -72,14 +72,14 @@
 				//const geometry = new THREE.CylinderBufferGeometry( 0.1, 0.1, 0.2, 32 ).translate( 0, 0.1, 0 );
 				//const loader = new GLTFLoader();
 
-				/*///////////////////////////////////////////////////////////////////////////////////////////////
+				///////////////////////////////////////////////////////////////////////////////////////////////
 				mtlLoader = new MTLLoader();
 				mtlLoader.setPath( "./assets/" );
 				mtlLoader.load( 'SC_Kiosk.mtl', function ( materials ) {
 
 					materials.preload();
 
-					var objLoader = new OBJLoader();
+					let objLoader = new OBJLoader();
 					objLoader.setMaterials( materials );
 					objLoader.setPath( "./assets/" );
 					objLoader.load( 'SC_Kiosk.obj', function ( object ) {
@@ -90,7 +90,7 @@
 					} );
 
 				} );
-				*/
+				
 
 				//const boxgeometry = new THREE.BoxBufferGeometry( 0.25, 0.25, 0.25 ).translate( 0, 0.1, 0 );
 				const geometry = new THREE.BoxBufferGeometry( 0.1, 0.1, 0.2, 32 ).translate( 0, 0.1, 0 );
