@@ -10,7 +10,7 @@
 
 		<div id="info">
 			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> ar - hit test<br/>(Chrome Android 81+)
-			<p>Greetings</p>
+			<p>Heyo</p>
 		</div>
 
 		<script type="module">
@@ -91,7 +91,7 @@
 
 				} );
 
-				var boxgeometry = new THREE.BoxBufferGeometry( 0.25, 0.25, 0.25 ).translate( 0, 0.1, 0 );
+				const geometry = new THREE.CylinderBufferGeometry( 0.1, 0.1, 0.2, 32 ).translate( 0, 0.1, 0 );
 
 
 				// Place model if reticle visible on touch
