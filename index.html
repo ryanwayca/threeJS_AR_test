@@ -21,9 +21,9 @@
 			import { ARButton } from './jsm/webxr/ARButton.js';
 
 			// import GLTF - 3D model loader
-			//import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
-			import { OBJLoader } from './jsm/loaders/OBJLoader.js';
-			import { MTLLoader } from './jsm/loaders/MTLLoader.js';
+			import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+			//import { OBJLoader } from './jsm/loaders/OBJLoader.js';
+			//import { MTLLoader } from './jsm/loaders/MTLLoader.js';
 
 			let container;
 			let camera, scene, renderer;
@@ -70,9 +70,37 @@
 
 				// Draw Geometry
 				//const geometry = new THREE.CylinderBufferGeometry( 0.1, 0.1, 0.2, 32 ).translate( 0, 0.1, 0 );
-				//const loader = new GLTFLoader();
+				const loader = new GLTFLoader();
+
+				// Load a glTF resource
+				loader.load('models/gltf/duck/duck.gltf', function ( gltf ) {
+
+						scene.add( gltf.scene );
+
+						gltf.animations; // Array<THREE.AnimationClip>
+						gltf.scene; // THREE.Group
+						gltf.scenes; // Array<THREE.Group>
+						gltf.cameras; // Array<THREE.Camera>
+						gltf.asset; // Object
+
+					},
+					// called while loading is progressing
+					function ( xhr ) {
+
+						console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+
+					},
+					// called when loading has errors
+					function ( error ) {
+
+						console.log( 'An error happened' );
+
+					}
+				);
+
 
 				///////////////////////////////////////////////////////////////////////////////////////////////
+				/*
 				mtlLoader = new MTLLoader();
 				mtlLoader.setPath( "./assets/" );
 				mtlLoader.load( 'SC_Kiosk.mtl', function ( materials ) {
@@ -88,6 +116,7 @@
 						scene.add( monkeymesh );
 
 					} );
+				*/
 
 				} );
 				
