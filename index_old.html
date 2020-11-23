@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js ar - hit test</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<link type="text/css" rel="stylesheet" href="main.css">
+	</head>
+	<body>
+
+		<div id="info">
+			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> ar - hit test<br/>(Chrome Android 81+)
+			<p>Salutations</p>
+		</div>
+
+		<script type="module">
+
+			// Our Javascript will go here.
+			
+			import * as THREE from './build/three.module.js';
+			import { ARButton } from './jsm/webxr/ARButton.js';
+
+			// import GLTF - 3D model loader
+			import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+			//import { OBJLoader } from './jsm/loaders/OBJLoader.js';
+			//import { MTLLoader } from './jsm/loaders/MTLLoader.js';
+
+			let container;
+			let camera, scene, renderer;
+			let controller;
+
+			let reticle;
+
+			let hitTestSource = null;
+			let hitTestSourceRequested = false;
+
+			//
+			let mtlLoader;
+			let monkeymesh;
+
+			init();
+			animate();
+
+			function init() {
+
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+				
+				// Create Scene
+
+				scene = new THREE.Scene();
+
+				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 20 );
+
+				const light = new THREE.HemisphereLight( 0xffffff, 0xbbbbff, 1 );
+				light.position.set( 0.5, 1, 0.25 );
+				scene.add( light );
+
+				//
+
+				renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.xr.enabled = true;
+				container.appendChild( renderer.domElement );
+
+				//
+
+				document.body.appendChild( ARButton.createButton( renderer, { requiredFeatures: [ 'hit-test' ] } ) );
+
+				// Draw Geometry
+				//const geometry = new THREE.CylinderBufferGeometry( 0.1, 0.1, 0.2, 32 ).translate( 0, 0.1, 0 );
+				const loader = new GLTFLoader();
+
+				// Load a glTF resource
+				loader.load('models/gltf/duck/duck.gltf', function ( gltf ) {
+
+						scene.add( gltf.scene );
+
+						gltf.animations; // Array<THREE.AnimationClip>
+						gltf.scene; // THREE.Group
+						gltf.scenes; // Array<THREE.Group>
+						gltf.cameras; // Array<THREE.Camera>
+						gltf.asset; // Object
+
+					},
+					// called while loading is progressing
+					function ( xhr ) {
+
+						console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+
+					},
+					// called when loading has errors
+					function ( error ) {
+
+						console.log( 'An error happened' );
+
+					}
+				);
+
+
+				///////////////////////////////////////////////////////////////////////////////////////////////
+				/*
+				mtlLoader = new MTLLoader();
+				mtlLoader.setPath( "./assets/" );
+				mtlLoader.load( 'SC_Kiosk.mtl', function ( materials ) {
+
+					materials.preload();
+
+					let objLoader = new OBJLoader();
+					objLoader.setMaterials( materials );
+					objLoader.setPath( "./assets/" );
+					objLoader.load( 'SC_Kiosk.obj', function ( object ) {
+
+						monkeymesh = object;
+						scene.add( monkeymesh );
+
+					} );
+				*/
+
+				} );
+				
+
+				//const boxgeometry = new THREE.BoxBufferGeometry( 0.25, 0.25, 0.25 ).translate( 0, 0.1, 0 );
+				const geometry = new THREE.BoxBufferGeometry( 0.1, 0.1, 0.2, 32 ).translate( 0, 0.1, 0 );
+
+
+				// Place model if reticle visible on touch
+				function onSelect() {
+
+					if ( reticle.visible ) {
+						
+						const material = new THREE.MeshPhongMaterial( { color: 0xffffff * Math.random() } );
+						const mesh = new THREE.Mesh( geometry, material );
+						mesh.position.setFromMatrixPosition( reticle.matrix );
+						mesh.scale.y = Math.random() * 2 + 1;
+						scene.add( mesh );
+						
+						/*
+						loader.load( './assets/SC_Kiosk.glb', function ( gltf ) {
+							scene.add( gltf.scene );
+						}, undefined, function ( error ) {
+							console.error( error );
+						} );
+						*/
+					}
+
+				}
+				
+				
+
+				/*
+				//import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118.3/build/three.module.js';
+				import * as THREE from './build/three.module.js';
+				import { ARButton } from './jsm/webxr/ARButton.js';
+				import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+
+				var container;
+				var camera, scene, renderer;
+				var controller;
+
+				var reticle;
+
+				var hitTestSource = null;
+				var hitTestSourceRequested = false;
+
+				var mtlLoader;
+				var monkeymesh;
+
+				init();
+				animate();
+
+				function init() {
+
+					container = document.createElement( 'div' );
+					document.body.appendChild( container );
+
+					scene = new THREE.Scene();
+
+					camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 20 );
+					camera.position.z = 10;
+
+					var light = new THREE.HemisphereLight( 0xffffff, 0xbbbbff, 1 );
+					light.position.set( 0.5, 1, 0.25 );
+					scene.add( light );
+
+					//
+
+					renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
+					renderer.setPixelRatio( window.devicePixelRatio );
+					renderer.setSize( window.innerWidth, window.innerHeight );
+					renderer.xr.enabled = true;
+					container.appendChild( renderer.domElement );
+
+
+					////////////////////////////////////////////////////////////////////////////////////////////////
+					mtlLoader = new MTLLoader();
+					mtlLoader.setPath( "./assets/" );
+					mtlLoader.load( 'SC_Kiosk.mtl', function ( materials ) {
+
+						materials.preload();
+
+						var objLoader = new OBJLoader();
+						objLoader.setMaterials( materials );
+						objLoader.setPath( "./assets/" );
+						objLoader.load( 'SC_Kiosk.obj', function ( object ) {
+
+							monkeymesh = object;
+							scene.add( monkeymesh );
+
+						} );
+
+					} );
+
+					var boxgeometry = new THREE.BoxBufferGeometry( 0.25, 0.25, 0.25 ).translate( 0, 0.1, 0 );
+
+					function onSelect() {
+
+						if ( reticle.visible ) {
+
+							var material = new THREE.MeshPhongMaterial( { color: 0xffffff * Math.random() } );
+							var mesh = new THREE.Mesh( boxgeometry, material );
+							mesh.position.setFromMatrixPosition( reticle.matrix );
+							//mesh.scale.y = Math.random() * 2 + 1;
+							mesh.scale.set( 0.25, 0.25, 0.25 );
+							scene.add( mesh );
+
+
+						}
+
+					}
+					*/
+
+				
+////////// beyond this point is the same as the tutorial /////
+
+				controller = renderer.xr.getController( 0 );
+				controller.addEventListener( 'select', onSelect );
+				scene.add( controller );
+
+				reticle = new THREE.Mesh(
+					new THREE.RingBufferGeometry( 0.15, 0.2, 32 ).rotateX( - Math.PI / 2 ),
+					new THREE.MeshBasicMaterial()
+				);
+				reticle.matrixAutoUpdate = false;
+				reticle.visible = false;
+				scene.add( reticle );
+
+				//
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			// Render Scene
+
+			function animate() {
+
+				renderer.setAnimationLoop( render );
+
+			}
+
+			function render( timestamp, frame ) {
+
+				if ( frame ) {
+
+					const referenceSpace = renderer.xr.getReferenceSpace();
+					const session = renderer.xr.getSession();
+
+					if ( hitTestSourceRequested === false ) {
+
+						session.requestReferenceSpace( 'viewer' ).then( function ( referenceSpace ) {
+
+							session.requestHitTestSource( { space: referenceSpace } ).then( function ( source ) {
+
+								hitTestSource = source;
+
+							} );
+
+						} );
+
+						session.addEventListener( 'end', function () {
+
+							hitTestSourceRequested = false;
+							hitTestSource = null;
+
+						} );
+
+						hitTestSourceRequested = true;
+
+					}
+
+					if ( hitTestSource ) {
+
+						const hitTestResults = frame.getHitTestResults( hitTestSource );
+
+						if ( hitTestResults.length ) {
+
+							const hit = hitTestResults[ 0 ];
+
+							reticle.visible = true;
+							reticle.matrix.fromArray( hit.getPose( referenceSpace ).transform.matrix );
+
+						} else {
+
+							reticle.visible = false;
+
+						}
+
+					}
+
+				}
+
+				renderer.render( scene, camera );
+
+			}
+
+		</script>
+	</body>
+</html>
